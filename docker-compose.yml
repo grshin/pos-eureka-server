@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  eureka-server:
+    container_name: pos-eureka-server
+    image: pos-eureka-server
+    build:
+      context: .
+      dockerfile: Dockerfile         # (생략 가능: 기본값)
+    ports:
+      - "8761:8761"
+    networks:
+      - msa-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# 추후 추가 서비스 예시 (지금은 주석 처리)
+#  order-service:
+#    build:
+#      context: ./pos-order-service
+#    depends_on:
+#      - eureka-server
+#    environment:
+#      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+#    networks:
+#      - msa-network
+#    ports:
+#      - "8080:8080"
+
+networks:
+  msa-network:
+    driver: bridge
